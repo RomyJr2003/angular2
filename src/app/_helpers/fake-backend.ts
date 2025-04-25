@@ -68,17 +68,29 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
         function authenticate() {
             const { email, password } = body;
-            const account = accounts.find(x => x.email === email && x.password === password && x.isVerified);
+            const account = accounts.find(x => x.email === email && x.password === password);
+            
             if (!account) return error('Email or password is incorrect');
-
+        
+            // ✅ Check if email is verified
+            if (!account.isVerified) {
+                return error('Email is not verified. Please check your inbox to verify.');
+            }
+        
+            // ✅ Check if status is 'Inactive'
+            if (account.status?.toLowerCase() === 'inactive') {
+                return error('Account is InActive. Please contact system administrator!');
+            }
+        
             account.refreshTokens.push(generateRefreshToken());
             localStorage.setItem(accountsKey, JSON.stringify(accounts));
-
+        
             return ok({
                 ...basicDetails(account),
                 jwtToken: generateJwtToken(account)
             });
         }
+        
 
         function refreshToken() {
             const refreshToken = getRefreshToken();
@@ -159,6 +171,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             if (!account) return error('Verification failed');
 
             account.isVerified = true;
+            account.status = 'Active';
             localStorage.setItem(accountsKey, JSON.stringify(accounts));
             return ok();
         }
