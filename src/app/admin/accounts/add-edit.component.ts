@@ -26,22 +26,30 @@ export class AddEditComponent implements OnInit {
         this.id = this.route.snapshot.params['id'];
         this.isAddMode = !this.id;
 
-        this.form = this.formBuilder.group({
+        
+        const formGroup = {
             title: ['', Validators.required],
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             role: ['', Validators.required],
+            status: ['Active', Validators.required], 
             password: ['', [Validators.minLength(6), this.isAddMode ? Validators.required : Validators.nullValidator]],
             confirmPassword: ['']
-        }, {
+        };
+
+        this.form = this.formBuilder.group(formGroup, {
             validator: MustMatch('password', 'confirmPassword')
         });
 
         if (!this.isAddMode) {
             this.accountService.getById(this.id)
                 .pipe(first())
-                .subscribe(x => this.form.patchValue(x));
+                .subscribe(account => {
+                    // Set the status explicitly
+                    account.status = account.status === 'Inactive' ? 'Inactive' : 'Active';
+                    this.form.patchValue(account);
+                });
         }
     }
 
@@ -68,7 +76,12 @@ export class AddEditComponent implements OnInit {
     }
 
     private createAccount() {
-        this.accountService.create(this.form.value)
+        const accountData = {
+            ...this.form.value,
+            status: this.form.get('status').value === 'Inactive' ? 'Inactive' : 'Active'
+        };
+
+        this.accountService.create(accountData)
             .pipe(first())
             .subscribe({
                 next: () => {
@@ -83,7 +96,12 @@ export class AddEditComponent implements OnInit {
     }
 
     private updateAccount() {
-        this.accountService.update(this.id, this.form.value)
+        const accountData = {
+            ...this.form.value,
+            status: this.form.get('status').value === 'Inactive' ? 'Inactive' : 'Active'
+        };
+
+        this.accountService.update(this.id, accountData)
             .pipe(first())
             .subscribe({
                 next: () => {
