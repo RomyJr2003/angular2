@@ -6,7 +6,10 @@ import { first } from 'rxjs/operators';
 import { AccountService, AlertService } from '@app/_services';
 import { MustMatch } from '@app/_helpers';
 
-@Component({ templateUrl: 'add-edit.component.html' })
+@Component({
+    templateUrl: 'add-edit.component.html',
+    standalone: false
+})
 export class AddEditComponent implements OnInit {
     form: UntypedFormGroup;
     id: string;

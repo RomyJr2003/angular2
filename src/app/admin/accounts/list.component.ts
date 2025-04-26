@@ -4,7 +4,10 @@ import { first } from 'rxjs/operators';
 import { AccountService } from '@app/_services';
 import { Account } from '@app/_models';
 
-@Component({ templateUrl: 'list.component.html' })
+@Component({
+    templateUrl: 'list.component.html',
+    standalone: false
+})
 export class ListComponent implements OnInit {
     accounts: Account[];
 
