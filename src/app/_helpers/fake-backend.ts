@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpRequest, HttpResponse, HttpHandler, HttpEvent, HttpInterceptor, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { delay, materialize, dematerialize } from 'rxjs/operators';
@@ -326,15 +326,11 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         }
 
         function generateJwtToken(account) {
-<<<<<<< HEAD
             // create token that expires in 15 minutes
             const tokenPayload = { 
                  exp: Math.round(new Date(Date.now() + 15*60*1000).getTime() / 1000),
-                // exp: 1,
-=======
-            const tokenPayload = {
-                exp: Math.round(Date.now() / 1000) + 15 * 60,
->>>>>>> 2d1a6460a853074e97dc0668ca73b50ef6ccac5b
+                 // exp: 1,
+                 //
                 id: account.id
             };
             return `fake-jwt-token.${btoa(JSON.stringify(tokenPayload))}`;
